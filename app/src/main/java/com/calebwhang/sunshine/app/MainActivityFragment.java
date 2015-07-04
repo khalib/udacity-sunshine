@@ -1,8 +1,10 @@
 package com.calebwhang.sunshine.app;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.text.format.Time;
@@ -58,12 +60,17 @@ public class MainActivityFragment extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        updateWeather();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
         if (id == R.id.action_refresh) {
-            FetchWeatherTask weatherTask = new FetchWeatherTask();
-            weatherTask.execute("94043");
+            updateWeather();
             return true;
         }
 
@@ -76,26 +83,13 @@ public class MainActivityFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        // Dummy data.
-        String[] forecastArray = {
-                "Today - Sunday - 88/63",
-                "Tomorrow - Foggy - 70/40",
-                "Weds - Cloudy - 72/63",
-                "Thurs - Asteroids - 75/65",
-                "Fri - Heavy Rain - 65/56",
-                "Sat - HELP TRAPPED IN WEATHERSTATION - 60/51",
-                "Sun - Sunny - 80/68"
-        };
-
-        List<String> weekForecast = new ArrayList<String>(Arrays.asList(forecastArray));
-
         // Create an ArrayAdapter.
         // The adapter takes data from the source and populates the list view.
         mForcastAdapter = new ArrayAdapter<String>(
                 getActivity(),
                 R.layout.list_item_forecast,
                 R.id.list_item_forecast_textview,
-                weekForecast
+                new ArrayList<String>()
         );
 
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forcast);
@@ -118,6 +112,16 @@ public class MainActivityFragment extends Fragment {
         return rootView;
     }
 
+    private void updateWeather() {
+        // Get the preference settings.
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String location = settings.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
+
+        // Get the weather data.
+        FetchWeatherTask weatherTask = new FetchWeatherTask();
+        weatherTask.execute(location);
+    }
+
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
         private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
@@ -132,8 +136,12 @@ public class MainActivityFragment extends Fragment {
             // Will contain the raw JSON response as a string.
             String forecaseJsonStr = null;
             String format = "json";
-            String units = "metric";
             int numDays = 7;
+
+            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String units = settings.getString(getString(R.string.pref_units_key), getString(R.string.pref_units_default));
+
+            Log.d(getActivity().getClass().getSimpleName(), "Units: " + units);
 
             try {
                 // Construct the URL for the OpenWeatherMap query
