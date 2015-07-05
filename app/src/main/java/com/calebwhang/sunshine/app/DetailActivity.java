@@ -26,7 +26,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class DetailActivity extends ActionBarActivity {
 
@@ -59,6 +58,18 @@ public class DetailActivity extends ActionBarActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        } else if (id == R.id.action_share) {
+            // Get the forecast string.
+            Intent intent = getIntent();
+            String forecast = intent.getStringExtra(Intent.EXTRA_TEXT);
+
+            // Launch share intent.
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.putExtra(Intent.EXTRA_TEXT, forecast);
+            shareIntent.setType("text/plain");
+            startActivity(shareIntent);
+
             return true;
         }
 
