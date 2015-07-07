@@ -3,6 +3,7 @@ package com.calebwhang.sunshine.app;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Log.i(LOG_TAG, "onCreateonCreateonCreateonCreateonCreateonCreateonCreateonCreateonCreateonCreate");
     }
 
     @Override
@@ -68,4 +70,33 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.i(LOG_TAG, "onPauseonPauseonPauseonPauseonPauseonPauseonPauseonPauseonPauseonPauseonPause");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.i(LOG_TAG, "onStoponStoponStoponStoponStoponStoponStoponStoponStoponStoponStoponStoponStop");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i(LOG_TAG, "onResumeonResumeonResumeonResumeonResumeonResumeonResumeonResumeonResumeonResume");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.i(LOG_TAG, "onStartonStartonStartonStartonStartonStartonStartonStartonStartonStartonStart");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.i(LOG_TAG, "onDestroyonDestroyonDestroyonDestroyonDestroyonDestroyonDestroyonDestroyonDestroy");
+    }
 }
