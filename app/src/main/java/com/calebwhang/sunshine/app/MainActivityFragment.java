@@ -90,7 +90,7 @@ public class MainActivityFragment extends Fragment {
                 new ArrayList<String>()
         );
 
-        ListView listView = (ListView) rootView.findViewById(R.id.listview_forcast);
+        ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(mForcastAdapter);
 
         // Set click listener.
