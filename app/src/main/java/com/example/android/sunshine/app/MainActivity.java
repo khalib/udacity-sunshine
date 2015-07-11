@@ -26,16 +26,23 @@ import android.view.MenuItem;
 public class MainActivity extends ActionBarActivity {
 
     private final String LOG_TAG = MainActivity.class.getSimpleName();
+    private final String FORECASTFRAGMENT_TAG = "FFTAG";
+    private String mLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
+
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new ForecastFragment())
+                    .add(R.id.container, new ForecastFragment(), FORECASTFRAGMENT_TAG)
                     .commit();
         }
+
+        // Initial location stored in preference.
+        mLocation = Utility.getPreferredLocation(this);
     }
 
     @Override
@@ -65,14 +72,29 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void openPreferredLocationInMap() {
+    @Override
+    protected void onResume() {
+        super.onResume();
+
         String location = Utility.getPreferredLocation(this);
 
+        // update the location in our second pane using the fragment manager
+        if (location != null && !location.equals(mLocation)) {
+            ForecastFragment ff = (ForecastFragment)getSupportFragmentManager().findFragmentByTag(FORECASTFRAGMENT_TAG);
+            if (ff != null) {
+                ff.onLocationChanged();
+            }
+
+            mLocation = location;
+        }
+    }
+
+    private void openPreferredLocationInMap() {
         // Using the URI scheme for showing a location found on a map.  This super-handy
         // intent can is detailed in the "Common Intents" page of Android's developer site:
         // http://developer.android.com/guide/components/intents-common.html#Maps
         Uri geoLocation = Uri.parse("geo:0,0?").buildUpon()
-                .appendQueryParameter("q", location)
+                .appendQueryParameter("q", mLocation)
                 .build();
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -81,7 +103,7 @@ public class MainActivity extends ActionBarActivity {
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
         } else {
-            Log.d(LOG_TAG, "Couldn't call " + location + ", no receiving apps installed!");
+            Log.d(LOG_TAG, "Couldn't call " + mLocation + ", no receiving apps installed!");
         }
     }
 }
